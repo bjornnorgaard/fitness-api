@@ -10,7 +10,6 @@ var exerciseSchema = {
 }
 
 var workoutSchema = {
-    id: Number,
     title: String,
     exercises: [exerciseSchema]
 };
