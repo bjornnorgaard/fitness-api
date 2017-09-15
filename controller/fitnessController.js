@@ -20,7 +20,6 @@ var logSchema = {
 }
 
 var WorkoutModel = mongoose.model("Workouts", workoutSchema);
-var ExerciseModel = mongoose.model("Exercises", exerciseSchema);
 var LogModel = mongoose.model("Logs", logSchema);
 
 module.exports.postWorkout = function(req, res) {
@@ -31,12 +30,8 @@ module.exports.postWorkout = function(req, res) {
     });
 
     workout.save(function(err) {
-        if (err) {
-            console.log(err);
-        }
-        else {
-            console.log("Success!");
-        }
+        if (err) console.log(err);
+        else console.log("Success!");
     });
 
     res.setHeader("Content-Type", "application/json");
