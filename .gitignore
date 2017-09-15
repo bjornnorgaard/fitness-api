@@ -60,3 +60,6 @@ typings/
 # Generated css files
 *.css
 *.css.map
+
+# Secrets
+secrets.json
