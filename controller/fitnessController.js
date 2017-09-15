@@ -20,6 +20,7 @@ var logSchema = {
 }
 
 var WorkoutModel = mongoose.model("Workouts", workoutSchema);
+var ExerciseModel = mongoose.model("Exercises", exerciseSchema);
 var LogModel = mongoose.model("Logs", logSchema);
 
 module.exports.postWorkout = function(req, res) {
