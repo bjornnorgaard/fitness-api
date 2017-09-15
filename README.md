@@ -1,4 +1,4 @@
-# fitness-api
+# Fitness API
 Web API for mandatory project for course ITTWEB at ASE.
 
 ## Deployment
