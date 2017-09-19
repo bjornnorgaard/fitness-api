@@ -1,5 +1,12 @@
+var pw = "";
+if(process.env.NODE_ENV == "production") {
+    pw = process.env.password;
+}
+else {
+    pw = require("../secrets.json").password;
+}
+
 var mongoose = require("mongoose");
-var pw = require("../secrets.json").password;
 mongoose.connect("mongodb://fitness-api:" + pw + "@ds038547.mlab.com:38547/ittweb-fitness")
 
 var exerciseSchema = {
