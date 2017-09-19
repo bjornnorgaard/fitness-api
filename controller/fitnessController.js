@@ -26,15 +26,24 @@ var logSchema = {
     workoutId: Number
 }
 
+var ExerciseModel = mongoose.model("Exercises", exerciseSchema);
 var WorkoutModel = mongoose.model("Workouts", workoutSchema);
 var LogModel = mongoose.model("Logs", logSchema);
 
 module.exports.postWorkout = function(req, res) {
     var objectToReturn = { key: "post workout" };
 
-    var workout = new WorkoutModel({
-        foo: "hello world"
-    });
+    // var workout = new WorkoutModel({
+    //     title: "Morning workout",
+    //     exercises: [
+    //         new ExerciseModel({
+    //             title: "Squats",
+    //             description: "Do some squats, beefcake!",
+    //             reps: 3,
+    //             sets: 20
+    //         })
+    //     ]
+    // });
 
     workout.save(function(err) {
         if (err) console.log(err);
