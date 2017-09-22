@@ -11,22 +11,22 @@ var Schema = mongoose.Schema;
 mongoose.connect("mongodb://fitness-api:" + pw + "@ds038547.mlab.com:38547/ittweb-fitness")
 
 var exerciseSchema = {
-    workout: {type: Schema.Types.ObjectId, ref: "Workouts"},
+    workout: { type: Schema.Types.ObjectId, ref: "Workouts" },
     title: String,
     description: String,
     reps: Number,
     sets: Number
-};
+}
 
 var logSchema = {
     workoutId: String,
-    date: Date
-};
+    date: Date,
+}
 
 var workoutSchema = {
     _id: Schema.Types.ObjectId,
     title: String,
-    exercises: [exerciseSchema]
+    exercises: [ exerciseSchema ]
 };
 
 var ExerciseModel = mongoose.model("Exercises", exerciseSchema);
@@ -34,23 +34,22 @@ var WorkoutModel = mongoose.model("Workouts", workoutSchema);
 var LogModel = mongoose.model("Logs", logSchema);
 
 // POST //
-module.exports.postWorkout = function (req, res) {
+module.exports.postWorkout = function(req, res) {
     console.log("Posting workout with title: " + req.body.title);
 
     var workout = new WorkoutModel({
         _id: new mongoose.Types.ObjectId(),
-        title: req.body.title
+        title: req.body.title,
     });
 
-    workout.save(function (err) {
-        var status;
+    workout.save(function(err) {
         if (err) {
-            console.log("Failed: " + err);
-            status = {status: "something went wrong"};
+            console.log("Failed: " + err)
+            var status = { status: "something went wrong" };
         }
         else {
             console.log('Success!');
-            status = {
+            var status = {
                 status: "workout successfully added",
                 id: workout._id
             };
@@ -58,9 +57,9 @@ module.exports.postWorkout = function (req, res) {
         res.setHeader("Content-Type", "application/json");
         res.send(JSON.stringify(status));
     });
-};
+}
 
-module.exports.postExercise = function (req, res) {
+module.exports.postExercise = function(req, res) {
     var workoutId = req.body.workoutId;
     var exerciseTitle = req.body.title;
     var exerciseDescription = req.body.description;
@@ -82,20 +81,19 @@ module.exports.postExercise = function (req, res) {
             title: exerciseTitle,
             description: exerciseDescription,
             sets: exerciseSets,
-            reps: exerciseReps
+            reps: exerciseReps,
         });
 
         workout.exercises.push(exercise);
 
         workout.save(function (err) {
-            var status;
             if (err) {
-                console.log("Failed: " + err);
-                status = {status: "something went wrong"};
+                console.log("Failed: " + err)
+                var status = { status: "something went wrong" };
             }
             else {
                 console.log('Success!');
-                status = {
+                var status = {
                     status: "exercise added successfully",
                     id: exercise._id
                 };
@@ -104,9 +102,9 @@ module.exports.postExercise = function (req, res) {
             res.send(JSON.stringify(status));
         });
     });
-};
+}
 
-module.exports.postLog = function (req, res) {
+module.exports.postLog = function(req, res) {
     var workoutId = req.body.workoutId;
     console.log("Posting log for workout id: " + workoutId);
 
@@ -115,15 +113,14 @@ module.exports.postLog = function (req, res) {
         date: new Date()
     });
 
-    log.save(function (err) {
-        var status;
+    log.save(function(err) {
         if (err) {
             console.log("Failed: " + err)
-            status = {status: "something went wrong"};
+            var status = { status: "something went wrong" };
         }
         else {
             console.log('Success!');
-            status = {
+            var status = {
                 status: "log successfully added",
                 id: log._id
             };
@@ -131,20 +128,19 @@ module.exports.postLog = function (req, res) {
         res.setHeader("Content-Type", "application/json");
         res.send(JSON.stringify(status));
     });
-};
+}
 
 // GET
-module.exports.getWorkouts = function (req, res) {
-    WorkoutModel.find(function (err, workout) {
-        var status;
+module.exports.getWorkouts = function(req, res) {
+    WorkoutModel.find(function(err, workout) {
         if (err) {
             console.log("Failed: " + err)
-            status = {status: "something went wrong"};
+            var status = { status: "something went wrong" };
         }
         else {
             console.log('Success!');
             console.log(workout);
-            status = {
+            var status = {
                 status: "exercise added successfully",
                 id: exercise._id
             };
@@ -153,53 +149,53 @@ module.exports.getWorkouts = function (req, res) {
         res.send(JSON.stringify(status));
     });
 
-    var objectToReturn = {key: "get all workouts"};
+    var objectToReturn = { key: "get all workouts" };
     res.setHeader("Content-Type", "application/json");
     res.send(JSON.stringify(objectToReturn));
-};
+}
 
-module.exports.getExercises = function (req, res) {
-    var objectToReturn = {key: "get all exercises"};
+module.exports.getExercises = function(req, res) {
+    var objectToReturn = { key: "get all exercises" };
     res.setHeader("Content-Type", "application/json");
     res.send(JSON.stringify(objectToReturn));
-};
+}
 
-module.exports.getLogs = function (req, res) {
-    var objectToReturn = {key: "get all logs"};
+module.exports.getLogs = function(req, res) {
+    var objectToReturn = { key: "get all logs" };
     res.setHeader("Content-Type", "application/json");
     res.send(JSON.stringify(objectToReturn));
-};
+}
 
 // GET/:id
-module.exports.getWorkout = function (req, res) {
+module.exports.getWorkout = function(req, res) {
     var id = req.params.id;
     console.log("Will search for this title: " + id);
 
     WorkoutModel
-        .find({title: id})
-        .populate("exercises")
-        .exec(function (err, workout) {
-            if (err) {
-                console.log(err);
-            }
-            var w = JSON.stringify(workout);
-            var derp = JSON.parse(w);
-            console.log(derp);
-        });
+    .find({title: id})
+    .populate("exercises")
+    .exec(function(err, workout) {
+        if (err) {
+            console.log(err);
+        }
+        var w = JSON.stringify(workout);
+        let derp = JSON.parse(w);
+        console.log(derp);
+    });
 
-    var objectToReturn = {key: "get workout"};
+    var objectToReturn = { key: "get workout" };
     res.setHeader("Content-Type", "application/json");
     res.send(JSON.stringify(objectToReturn));
-};
+}
 
-module.exports.getExercise = function (req, res) {
-    var objectToReturn = {key: "get exercise by id"};
+module.exports.getExercise = function(req, res) {
+    var objectToReturn = { key: "get exercise by id" };
     res.setHeader("Content-Type", "application/json");
     res.send(JSON.stringify(objectToReturn));
-};
+}
 
-module.exports.getLog = function (req, res) {
-    var objectToReturn = {key: "get log by id"};
+module.exports.getLog = function(req, res) {
+    var objectToReturn = { key: "get log by id" };
     res.setHeader("Content-Type", "application/json");
     res.send(JSON.stringify(objectToReturn));
-};
+}
