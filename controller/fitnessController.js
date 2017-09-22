@@ -16,12 +16,12 @@ var exerciseSchema = {
     description: String,
     reps: Number,
     sets: Number
-}
+};
 
 var logSchema = {
     workoutId: String,
     date: Date,
-}
+};
 
 var workoutSchema = {
     _id: Schema.Types.ObjectId,
@@ -57,7 +57,7 @@ module.exports.postWorkout = function(req, res) {
         res.setHeader("Content-Type", "application/json");
         res.send(JSON.stringify(status));
     });
-}
+};
 
 module.exports.postExercise = function(req, res) {
     var workoutId = req.body.workoutId;
@@ -96,7 +96,7 @@ module.exports.postExercise = function(req, res) {
             res.send(JSON.stringify(status));
         });
     });
-}
+};
 
 module.exports.postLog = function(req, res) {
     var workoutId = req.body.workoutId;
@@ -122,43 +122,56 @@ module.exports.postLog = function(req, res) {
         res.setHeader("Content-Type", "application/json");
         res.send(JSON.stringify(status));
     });
-}
+};
 
 // GET
 module.exports.getWorkouts = function(req, res) {
     WorkoutModel.find(function(err, workout) {
+        var response;
         if (err) {
             console.log("Failed: " + err)
-            var status = { status: "something went wrong" };
+            response = { status: "something went wrong" };
         }
         else {
             console.log('Success!');
             console.log(workout);
-            var status = {
-                status: "exercise added successfully",
-                id: exercise._id
-            };
+            response = workout;
         }
         res.setHeader("Content-Type", "application/json");
-        res.send(JSON.stringify(status));
+        res.send(JSON.stringify(response));
     });
-
-    var objectToReturn = { key: "get all workouts" };
-    res.setHeader("Content-Type", "application/json");
-    res.send(JSON.stringify(objectToReturn));
-}
+};
 
 module.exports.getExercises = function(req, res) {
-    var objectToReturn = { key: "get all exercises" };
-    res.setHeader("Content-Type", "application/json");
-    res.send(JSON.stringify(objectToReturn));
-}
+    var workoutId = req.params.id;
+    console.log("STARTED finding exercises for workout id: " + workoutId);
+
+    WorkoutModel.findById(workoutId, function(err, workout) {
+        var response;
+        if (err) {
+            response = { status: "ERROR while looking for workout" };
+        }
+        else {
+            response = workout.exercises;
+        }
+        res.setHeader("Content-Type", "application/json");
+        res.send(JSON.stringify(response));
+    });
+};
 
 module.exports.getLogs = function(req, res) {
-    var objectToReturn = { key: "get all logs" };
-    res.setHeader("Content-Type", "application/json");
-    res.send(JSON.stringify(objectToReturn));
-}
+    LogModel.find(function(err, logs) {
+        var response;
+        if (err) {
+            response = { status: "ERROR while looking for logs" };
+        }
+        else {
+            response = logs;
+        }
+        res.setHeader("Content-Type", "application/json");
+        res.send(JSON.stringify(response));
+    });
+};
 
 // GET/:id
 module.exports.getWorkout = function(req, res) {
@@ -170,10 +183,20 @@ module.exports.getWorkout = function(req, res) {
         res.setHeader("Content-Type", "application/json");
         res.send(JSON.stringify(workout));
     });
-}
+};
 
-module.exports.getLog = function(req, res) {
-    var objectToReturn = { key: "get log by id" };
-    res.setHeader("Content-Type", "application/json");
-    res.send(JSON.stringify(objectToReturn));
-}
+module.exports.getLogsForWorkout = function(req, res) {
+    var workoutId = req.params.id;
+
+    LogModel.find({ "workoutId": workoutId }, function(err, logs) {
+        var response;
+        if (err) {
+            response = { status: "ERROR while looking for logs" };
+        }
+        else {
+            response = logs;
+        }
+        res.setHeader("Content-Type", "application/json");
+        res.send(JSON.stringify(response));
+    });
+};
