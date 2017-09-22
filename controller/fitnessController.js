@@ -19,9 +19,8 @@ var exerciseSchema = {
 }
 
 var logSchema = {
-    workout: { type: Schema.Types.ObjectId, ref: "Workouts" },
+    workoutId: String,
     date: Date,
-    workoutId: Number
 }
 
 var workoutSchema = {
@@ -34,6 +33,7 @@ var ExerciseModel = mongoose.model("Exercises", exerciseSchema);
 var WorkoutModel = mongoose.model("Workouts", workoutSchema);
 var LogModel = mongoose.model("Logs", logSchema);
 
+// POST //
 module.exports.postWorkout = function(req, res) {
     console.log("Posting workout with title: " + req.body.title);
 
@@ -44,11 +44,18 @@ module.exports.postWorkout = function(req, res) {
 
     workout.save(function(err) {
         if (err) {
-            console.log(err);
+            console.log("Failed: " + err)
+            var status = { status: "something went wrong" };
         }
         else {
-            console.log("Success");
+            console.log('Success!');
+            var status = {
+                status: "workout successfully added",
+                id: workout._id
+            };
         }
+        res.setHeader("Content-Type", "application/json");
+        res.send(JSON.stringify(status));
     });
 }
 
@@ -86,7 +93,10 @@ module.exports.postExercise = function(req, res) {
             }
             else {
                 console.log('Success!');
-                var status = { status: "exercise added successfully" };
+                var status = {
+                    status: "exercise added successfully",
+                    id: exercise._id
+                };
             }
             res.setHeader("Content-Type", "application/json");
             res.send(JSON.stringify(status));
@@ -95,18 +105,57 @@ module.exports.postExercise = function(req, res) {
 }
 
 module.exports.postLog = function(req, res) {
-    var objectToReturn = { key: "post log" };
+    var workoutId = req.body.workoutId;
+    console.log("Posting log for workout id: " + workoutId);
 
+    var log = new LogModel({
+        workoutId: workoutId,
+        date: new Date()
+    });
+
+    log.save(function(err) {
+        if (err) {
+            console.log("Failed: " + err)
+            var status = { status: "something went wrong" };
+        }
+        else {
+            console.log('Success!');
+            var status = {
+                status: "log successfully added",
+                id: log._id
+            };
+        }
+        res.setHeader("Content-Type", "application/json");
+        res.send(JSON.stringify(status));
+    });
+}
+
+// GET
+module.exports.getWorkouts = function(req, res) {
+    var objectToReturn = { key: "get all workouts" };
     res.setHeader("Content-Type", "application/json");
     res.send(JSON.stringify(objectToReturn));
 }
 
+module.exports.getExercises = function(req, res) {
+    var objectToReturn = { key: "get all exercises" };
+    res.setHeader("Content-Type", "application/json");
+    res.send(JSON.stringify(objectToReturn));
+}
+
+module.exports.getLogs = function(req, res) {
+    var objectToReturn = { key: "get all logs" };
+    res.setHeader("Content-Type", "application/json");
+    res.send(JSON.stringify(objectToReturn));
+}
+
+// GET/:id
 module.exports.getWorkout = function(req, res) {
-    var title = req.params.title;
-    console.log("Will search for this title: " + title);
+    var id = req.params.id;
+    console.log("Will search for this title: " + id);
 
     WorkoutModel
-    .find({title: title})
+    .find({title: id})
     .populate("exercises")
     .exec(function(err, workout) {
         if (err) {
@@ -123,15 +172,13 @@ module.exports.getWorkout = function(req, res) {
 }
 
 module.exports.getExercise = function(req, res) {
-    var objectToReturn = { key: "get exercise" };
-
+    var objectToReturn = { key: "get exercise by id" };
     res.setHeader("Content-Type", "application/json");
     res.send(JSON.stringify(objectToReturn));
 }
 
 module.exports.getLog = function(req, res) {
-    var objectToReturn = { key: "get log" };
-
+    var objectToReturn = { key: "get log by id" };
     res.setHeader("Content-Type", "application/json");
     res.send(JSON.stringify(objectToReturn));
 }
