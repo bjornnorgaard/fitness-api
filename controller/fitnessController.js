@@ -7,25 +7,28 @@ else {
 }
 
 var mongoose = require("mongoose");
-var schema = mongoose.Schema;
+var Schema = mongoose.Schema;
 mongoose.connect("mongodb://fitness-api:" + pw + "@ds038547.mlab.com:38547/ittweb-fitness")
 
 var exerciseSchema = {
-    workoutId: Number,
+    workout: { type: Schema.Types.ObjectId, ref: "Workouts" },
     title: String,
     description: String,
     reps: Number,
     sets: Number
 }
 
-var workoutSchema = {
-    title: String
-};
-
 var logSchema = {
+    workout: { type: Schema.Types.ObjectId, ref: "Workouts" },
     date: Date,
     workoutId: Number
 }
+
+var workoutSchema = {
+    _id: Schema.Types.ObjectId,
+    title: String,
+    exercises: [ { type: Schema.Types.ObjectId, ref: "Exercises" } ]
+};
 
 var ExerciseModel = mongoose.model("Exercises", exerciseSchema);
 var WorkoutModel = mongoose.model("Workouts", workoutSchema);
@@ -35,6 +38,7 @@ module.exports.postWorkout = function(req, res) {
     console.log("Posting workout with title: " + req.body.title);
 
     var workout = new WorkoutModel({
+        _id: new mongoose.Types.ObjectId(),
         title: req.body.title,
     });
 
@@ -43,18 +47,43 @@ module.exports.postWorkout = function(req, res) {
             console.log(err);
         }
         else {
-            console.log("Success!");
-            WorkoutModel.find({title: req.body.title}, function(err, workout) {
-                res.setHeader("Content-Type", "application/json");
-                res.send(JSON.stringify(workout));
-            });
+            console.log("Success");
         }
     });
 }
 
 module.exports.postExercise = function(req, res) {
-    var objectToReturn = { key: "post exercise" };
+    var workoutId = req.body.workoutId;
+    console.log("workout id: " + workoutId);
+    var exerciseTitle = req.body.title;
+    console.log("exercise title: " + exerciseTitle);
+    var exerciseDescription = req.body.description;
+    console.log("exercise desc: " + exerciseDescription);
+    var exerciseSets = req.body.sets;
+    console.log("exercise sets: " + exerciseSets);
+    var exerciseReps = req.body.reps;
+    console.log("exercies reps: " + exerciseReps);
 
+    WorkoutModel.findById(workoutId, function (err, workout) {
+        if (err) console.log("postExercise could not find workout by id");
+
+        var exercise = new ExerciseModel({
+            _id: new mongoose.Types.ObjectId(),
+            title: exerciseTitle,
+            description: exerciseDescription,
+            sets: exerciseSets,
+            reps: exerciseReps,
+        });
+
+        workout.exercises.push(exercise);
+
+        workout.save(function (err) {
+            if (err) console.log("Failing: " + err);
+            console.log('Success!');
+          });
+    });
+
+    var objectToReturn = { key: "post exercise" };
     res.setHeader("Content-Type", "application/json");
     res.send(JSON.stringify(objectToReturn));
 }
