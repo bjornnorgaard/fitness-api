@@ -71,12 +71,6 @@ module.exports.postExercise = function(req, res) {
 
         console.log("Will add exercise to this workout: " + workout);
 
-        console.log("workout id: " + workoutId);
-        console.log("exercise title: " + exerciseTitle);
-        console.log("exercise desc: " + exerciseDescription);
-        console.log("exercise sets: " + exerciseSets);
-        console.log("exercies reps: " + exerciseReps);
-
         var exercise = new ExerciseModel({
             title: exerciseTitle,
             description: exerciseDescription,
@@ -169,29 +163,13 @@ module.exports.getLogs = function(req, res) {
 // GET/:id
 module.exports.getWorkout = function(req, res) {
     var id = req.params.id;
-    console.log("Will search for this title: " + id);
 
-    WorkoutModel
-    .find({title: id})
-    .populate("exercises")
-    .exec(function(err, workout) {
-        if (err) {
-            console.log(err);
-        }
-        var w = JSON.stringify(workout);
-        let derp = JSON.parse(w);
-        console.log(derp);
+    WorkoutModel.findById(id, function (err, workout) {
+        if (err) console.log("getWorkout could not find workout by id");
+
+        res.setHeader("Content-Type", "application/json");
+        res.send(JSON.stringify(workout));
     });
-
-    var objectToReturn = { key: "get workout" };
-    res.setHeader("Content-Type", "application/json");
-    res.send(JSON.stringify(objectToReturn));
-}
-
-module.exports.getExercise = function(req, res) {
-    var objectToReturn = { key: "get exercise by id" };
-    res.setHeader("Content-Type", "application/json");
-    res.send(JSON.stringify(objectToReturn));
 }
 
 module.exports.getLog = function(req, res) {

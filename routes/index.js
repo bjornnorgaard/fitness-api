@@ -18,7 +18,6 @@ router.get("/logs", controller.getLogs);
 
 // GET/:id
 router.get("/workouts/:id", controller.getWorkout);
-router.get("/exercises/:id", controller.getExercise);
 router.get("/logs/:id", controller.getLog);
 
 module.exports = router;
