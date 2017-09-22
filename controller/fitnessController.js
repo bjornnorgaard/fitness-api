@@ -132,6 +132,23 @@ module.exports.postLog = function(req, res) {
 
 // GET
 module.exports.getWorkouts = function(req, res) {
+    WorkoutModel.find(function(err, workout) {
+        if (err) {
+            console.log("Failed: " + err)
+            var status = { status: "something went wrong" };
+        }
+        else {
+            console.log('Success!');
+            console.log(workout);
+            var status = {
+                status: "exercise added successfully",
+                id: exercise._id
+            };
+        }
+        res.setHeader("Content-Type", "application/json");
+        res.send(JSON.stringify(status));
+    });
+
     var objectToReturn = { key: "get all workouts" };
     res.setHeader("Content-Type", "application/json");
     res.send(JSON.stringify(objectToReturn));
