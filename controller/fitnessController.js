@@ -27,7 +27,7 @@ var logSchema = {
 var workoutSchema = {
     _id: Schema.Types.ObjectId,
     title: String,
-    exercises: [ { type: Schema.Types.ObjectId, ref: "Exercises" } ]
+    exercises: [ exerciseSchema ]
 };
 
 var ExerciseModel = mongoose.model("Exercises", exerciseSchema);
@@ -54,21 +54,23 @@ module.exports.postWorkout = function(req, res) {
 
 module.exports.postExercise = function(req, res) {
     var workoutId = req.body.workoutId;
-    console.log("workout id: " + workoutId);
     var exerciseTitle = req.body.title;
-    console.log("exercise title: " + exerciseTitle);
     var exerciseDescription = req.body.description;
-    console.log("exercise desc: " + exerciseDescription);
     var exerciseSets = req.body.sets;
-    console.log("exercise sets: " + exerciseSets);
     var exerciseReps = req.body.reps;
-    console.log("exercies reps: " + exerciseReps);
 
     WorkoutModel.findById(workoutId, function (err, workout) {
         if (err) console.log("postExercise could not find workout by id");
 
+        console.log("Will add exercise to this workout: " + workout);
+
+        console.log("workout id: " + workoutId);
+        console.log("exercise title: " + exerciseTitle);
+        console.log("exercise desc: " + exerciseDescription);
+        console.log("exercise sets: " + exerciseSets);
+        console.log("exercies reps: " + exerciseReps);
+
         var exercise = new ExerciseModel({
-            _id: new mongoose.Types.ObjectId(),
             title: exerciseTitle,
             description: exerciseDescription,
             sets: exerciseSets,
@@ -78,14 +80,18 @@ module.exports.postExercise = function(req, res) {
         workout.exercises.push(exercise);
 
         workout.save(function (err) {
-            if (err) console.log("Failing: " + err);
-            console.log('Success!');
-          });
+            if (err) {
+                console.log("Failed: " + err)
+                var status = { status: "something went wrong" };
+            }
+            else {
+                console.log('Success!');
+                var status = { status: "exercise added successfully" };
+            }
+            res.setHeader("Content-Type", "application/json");
+            res.send(JSON.stringify(status));
+        });
     });
-
-    var objectToReturn = { key: "post exercise" };
-    res.setHeader("Content-Type", "application/json");
-    res.send(JSON.stringify(objectToReturn));
 }
 
 module.exports.postLog = function(req, res) {
