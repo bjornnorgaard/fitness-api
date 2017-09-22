@@ -33,7 +33,6 @@ var ExerciseModel = mongoose.model("Exercises", exerciseSchema);
 var WorkoutModel = mongoose.model("Workouts", workoutSchema);
 var LogModel = mongoose.model("Logs", logSchema);
 
-// POST //
 module.exports.postWorkout = function(req, res) {
     console.log("Posting workout with title: " + req.body.title);
 
@@ -124,7 +123,6 @@ module.exports.postLog = function(req, res) {
     });
 };
 
-// GET
 module.exports.getWorkouts = function(req, res) {
     WorkoutModel.find(function(err, workout) {
         var response;
@@ -173,7 +171,6 @@ module.exports.getLogs = function(req, res) {
     });
 };
 
-// GET/:id
 module.exports.getWorkout = function(req, res) {
     var id = req.params.id;
 
