@@ -60,10 +60,15 @@ module.exports.postWorkout = function(req, res) {
 
 module.exports.postExercise = function(req, res) {
     var workoutId = req.body.workoutId;
+    console.log("postExercise() received workoutId: " + workoutId );
     var exerciseTitle = req.body.title;
+    console.log("postExercise() received exerciseTitle: " + exerciseTitle );
     var exerciseDescription = req.body.description;
+    console.log("postExercise() received exerciseDescription: " + exerciseDescription );
     var exerciseSets = req.body.sets;
+    console.log("postExercise() received exerciseSets: " + exerciseSets );
     var exerciseReps = req.body.reps;
+    console.log("postExercise() received exerciseReps: " + exerciseReps );
 
     WorkoutModel.findById(workoutId, function (err, workout) {
         if (err) console.log("postExercise could not find workout by id");
