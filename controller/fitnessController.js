@@ -213,12 +213,28 @@ module.exports.getLogsForWorkout = function (req, res) {
 };
 
 module.exports.postLogin = function(req, res){
-    console.log("postLogin(): username: " + req.body.username);
-    console.log("postLogin(): password: " + req.body.password);
+    var username = req.body.username;
+    var pass = req.body.password;
 
-    var response = "postLogin says hi";
-    res.setHeader("Content-Type", "application/json");
-    res.send(JSON.stringify(response));
+    console.log("postRegister(): username: " + username);
+    console.log("postRegister(): password: " + pass);
+
+    if (!username || !pass) {
+        sendResponse(res, "Username and/or password was invalid");
+    }
+
+    UserModel.findOne({username: username}, "username", function (err, user) {
+        if (err) {
+            console.log("findOne(): " + err);
+            sendResponse(res, err);
+        }
+        if (user) {
+            sendResponse(res, {msg: "Found user, need to check hash", token: "none"});
+        }
+        if (!user) {
+            sendResponse(res, "User not found");
+        }
+    });
 };
 
 module.exports.postRegister = function(req, res){
@@ -233,7 +249,7 @@ module.exports.postRegister = function(req, res){
     }
 
     var salt = crypto.randomBytes(16).toString("hex");
-    var hash = crypto.pbkdf2Sync(pass, salt, 1000, 256, "sha512").toString("hex");
+    var hash = generateHash(pass, salt);
 
     var newUser = new UserModel({
         username: username,
@@ -247,7 +263,7 @@ module.exports.postRegister = function(req, res){
             sendResponse(res, err);
         }
         if (user) {
-            sendResponse(res, "User already exists");
+            sendResponse(res, "User already exists, returning");
         }
         if (!user) {
             console.log("Saving user...");
@@ -263,4 +279,8 @@ function sendResponse(res, message) {
     res.setHeader("Content-Type", "application/json");
     console.log(message);
     res.send(JSON.stringify(message));
+}
+
+function generateHash(pass, salt) {
+    return crypto.pbkdf2Sync(pass, salt, 1000, 256, "sha512").toString("hex");
 }
