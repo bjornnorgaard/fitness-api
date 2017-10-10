@@ -11,7 +11,7 @@ var Schema = mongoose.Schema;
 mongoose.connect("mongodb://fitness-api:" + pw + "@ds038547.mlab.com:38547/ittweb-fitness")
 
 var exerciseSchema = {
-    workout: { type: Schema.Types.ObjectId, ref: "Workouts" },
+    workout: {type: Schema.Types.ObjectId, ref: "Workouts"},
     title: String,
     description: String,
     reps: Number,
@@ -26,14 +26,14 @@ var logSchema = {
 var workoutSchema = {
     _id: Schema.Types.ObjectId,
     title: String,
-    exercises: [ exerciseSchema ]
+    exercises: [exerciseSchema]
 };
 
 var ExerciseModel = mongoose.model("Exercises", exerciseSchema);
 var WorkoutModel = mongoose.model("Workouts", workoutSchema);
 var LogModel = mongoose.model("Logs", logSchema);
 
-module.exports.postWorkout = function(req, res) {
+module.exports.postWorkout = function (req, res) {
     console.log("Posting workout with title: " + req.body.title);
 
     var workout = new WorkoutModel({
@@ -41,10 +41,10 @@ module.exports.postWorkout = function(req, res) {
         title: req.body.title,
     });
 
-    workout.save(function(err) {
+    workout.save(function (err) {
         if (err) {
             console.log("Failed: " + err)
-            var status = { status: "something went wrong" };
+            var status = {status: "something went wrong"};
         }
         else {
             console.log('Success!');
@@ -58,17 +58,17 @@ module.exports.postWorkout = function(req, res) {
     });
 };
 
-module.exports.postExercise = function(req, res) {
+module.exports.postExercise = function (req, res) {
     var workoutId = req.body.workoutId;
-    console.log("postExercise() received workoutId: " + workoutId );
+    console.log("postExercise() received workoutId: " + workoutId);
     var exerciseTitle = req.body.title;
-    console.log("postExercise() received exerciseTitle: " + exerciseTitle );
+    console.log("postExercise() received exerciseTitle: " + exerciseTitle);
     var exerciseDescription = req.body.description;
-    console.log("postExercise() received exerciseDescription: " + exerciseDescription );
+    console.log("postExercise() received exerciseDescription: " + exerciseDescription);
     var exerciseSets = req.body.sets;
-    console.log("postExercise() received exerciseSets: " + exerciseSets );
+    console.log("postExercise() received exerciseSets: " + exerciseSets);
     var exerciseReps = req.body.reps;
-    console.log("postExercise() received exerciseReps: " + exerciseReps );
+    console.log("postExercise() received exerciseReps: " + exerciseReps);
 
     WorkoutModel.findById(workoutId, function (err, workout) {
         if (err) console.log("postExercise could not find workout by id");
@@ -87,7 +87,7 @@ module.exports.postExercise = function(req, res) {
         workout.save(function (err) {
             if (err) {
                 console.log("Failed: " + err)
-                var status = { status: "something went wrong" };
+                var status = {status: "something went wrong"};
             }
             else {
                 console.log('Success!');
@@ -102,7 +102,7 @@ module.exports.postExercise = function(req, res) {
     });
 };
 
-module.exports.postLog = function(req, res) {
+module.exports.postLog = function (req, res) {
     var workoutId = req.body.workoutId;
     console.log("Posting log for workout id: " + workoutId);
 
@@ -111,10 +111,10 @@ module.exports.postLog = function(req, res) {
         date: new Date()
     });
 
-    log.save(function(err) {
+    log.save(function (err) {
         if (err) {
             console.log("Failed: " + err)
-            var status = { status: "something went wrong" };
+            var status = {status: "something went wrong"};
         }
         else {
             console.log('Success!');
@@ -128,12 +128,12 @@ module.exports.postLog = function(req, res) {
     });
 };
 
-module.exports.getWorkouts = function(req, res) {
-    WorkoutModel.find(function(err, workout) {
+module.exports.getWorkouts = function (req, res) {
+    WorkoutModel.find(function (err, workout) {
         var response;
         if (err) {
             console.log("Failed: " + err)
-            response = { status: "something went wrong" };
+            response = {status: "something went wrong"};
         }
         else {
             console.log('Success!');
@@ -145,14 +145,14 @@ module.exports.getWorkouts = function(req, res) {
     });
 };
 
-module.exports.getExercises = function(req, res) {
+module.exports.getExercises = function (req, res) {
     var workoutId = req.params.id;
     console.log("STARTED finding exercises for workout id: " + workoutId);
 
-    WorkoutModel.findById(workoutId, function(err, workout) {
+    WorkoutModel.findById(workoutId, function (err, workout) {
         var response;
         if (err) {
-            response = { status: "ERROR while looking for workout" };
+            response = {status: "ERROR while looking for workout"};
         }
         else {
             response = workout.exercises;
@@ -162,11 +162,11 @@ module.exports.getExercises = function(req, res) {
     });
 };
 
-module.exports.getLogs = function(req, res) {
-    LogModel.find(function(err, logs) {
+module.exports.getLogs = function (req, res) {
+    LogModel.find(function (err, logs) {
         var response;
         if (err) {
-            response = { status: "ERROR while looking for logs" };
+            response = {status: "ERROR while looking for logs"};
         }
         else {
             response = logs;
@@ -176,7 +176,7 @@ module.exports.getLogs = function(req, res) {
     });
 };
 
-module.exports.getWorkout = function(req, res) {
+module.exports.getWorkout = function (req, res) {
     var id = req.params.id;
 
     WorkoutModel.findById(id, function (err, workout) {
@@ -187,13 +187,13 @@ module.exports.getWorkout = function(req, res) {
     });
 };
 
-module.exports.getLogsForWorkout = function(req, res) {
+module.exports.getLogsForWorkout = function (req, res) {
     var workoutId = req.params.id;
 
-    LogModel.find({ "workoutId": workoutId }, function(err, logs) {
+    LogModel.find({"workoutId": workoutId}, function (err, logs) {
         var response;
         if (err) {
-            response = { status: "ERROR while looking for logs" };
+            response = {status: "ERROR while looking for logs"};
         }
         else {
             response = logs;

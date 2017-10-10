@@ -63,3 +63,6 @@ typings/
 
 # Secrets
 secrets.json
+
+# IntelliJ
+.idea/
