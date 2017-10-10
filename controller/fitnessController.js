@@ -1,11 +1,15 @@
 let crypto = require("crypto");
+let jwt = require("jsonwebtoken");
 
 var pw = "";
+var jwt_key = "";
 if (process.env.NODE_ENV == "production") {
     pw = process.env.password;
+    jwt_key = process.env.JWT_KEY
 }
 else {
     pw = require("../secrets.json").password;
+    jwt_key = require("../secrets.json").jwt_key;
 }
 
 var mongoose = require("mongoose");
@@ -279,8 +283,26 @@ function sendResponse(res, message) {
     res.setHeader("Content-Type", "application/json");
     console.log(message);
     res.send(JSON.stringify(message));
-}
+};
 
 function generateHash(pass, salt) {
     return crypto.pbkdf2Sync(pass, salt, 1000, 256, "sha512").toString("hex");
-}
+};
+
+function generateToken(user) {
+    var token = jwt.sign(
+        {id: user._id, username: user.username},
+        jwt_key,
+        {expiresIn: "24h"}
+    );
+};
+
+function isAuthentic(user, password) {
+    var hash = generateHash(password, user.salt);
+    if (user.hash == hash) {
+        return true;
+    }
+    else {
+        return false;
+    }
+};
