@@ -1,3 +1,5 @@
+let crypto = require("crypto");
+
 var pw = "";
 if (process.env.NODE_ENV == "production") {
     pw = process.env.password;
@@ -29,9 +31,16 @@ var workoutSchema = {
     exercises: [exerciseSchema]
 };
 
+var userSchema = {
+    username: String,
+    hash: String,
+    salt: String,
+}
+
 var ExerciseModel = mongoose.model("Exercises", exerciseSchema);
 var WorkoutModel = mongoose.model("Workouts", workoutSchema);
 var LogModel = mongoose.model("Logs", logSchema);
+var UserModel = mongoose.model("User", userSchema);
 
 module.exports.postWorkout = function (req, res) {
     console.log("Posting workout with title: " + req.body.title);
@@ -201,4 +210,22 @@ module.exports.getLogsForWorkout = function (req, res) {
         res.setHeader("Content-Type", "application/json");
         res.send(JSON.stringify(response));
     });
+};
+
+module.exports.postLogin = function(req, res){
+    console.log("postLogin(): username: " + req.body.username);
+    console.log("postLogin(): password: " + req.body.password);
+
+    var response = "postLogin says hi";
+    res.setHeader("Content-Type", "application/json");
+    res.send(JSON.stringify(response));
+};
+
+module.exports.postRegister = function(req, res){
+    console.log("postRegister(): username: " + req.body.username);
+    console.log("postRegister(): password: " + req.body.password);
+
+    var response = "postRegister here!";
+    res.setHeader("Content-Type", "application/json");
+    res.send(JSON.stringify(response));
 };
