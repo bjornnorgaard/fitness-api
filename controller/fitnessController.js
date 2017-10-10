@@ -222,10 +222,45 @@ module.exports.postLogin = function(req, res){
 };
 
 module.exports.postRegister = function(req, res){
-    console.log("postRegister(): username: " + req.body.username);
-    console.log("postRegister(): password: " + req.body.password);
+    var username = req.body.username;
+    var pass = req.body.password;
 
-    var response = "postRegister here!";
-    res.setHeader("Content-Type", "application/json");
-    res.send(JSON.stringify(response));
+    console.log("postRegister(): username: " + username);
+    console.log("postRegister(): password: " + pass);
+
+    if (!username || !pass) {
+        sendResponse(res, "Username and/or password was invalid");
+    }
+
+    var salt = crypto.randomBytes(16).toString("hex");
+    var hash = crypto.pbkdf2Sync(pass, salt, 1000, 256, "sha512").toString("hex");
+
+    var newUser = new UserModel({
+        username: username,
+        hash: hash,
+        salt: salt,
+    });
+
+    UserModel.findOne({username: username}, "username", function (err, user) {
+        if (err) {
+            console.log("findOne(): " + err);
+            sendResponse(res, err);
+        }
+        if (user) {
+            sendResponse(res, "User already exists");
+        }
+        if (!user) {
+            console.log("Saving user...");
+            newUser.save(function (err) {
+                console.log("User saved.");
+                sendResponse(res, "User saved.");
+            });
+        }
+    });
 };
+
+function sendResponse(res, message) {
+    res.setHeader("Content-Type", "application/json");
+    console.log(message);
+    res.send(JSON.stringify(message));
+}
