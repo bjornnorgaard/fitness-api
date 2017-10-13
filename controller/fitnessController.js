@@ -312,7 +312,7 @@ function generateToken(user) {
     };
 
     var token = jwt.sign(payload, jwt_key, {
-        expiresIn: "24h"
+        expiresIn: 3600
     });
 
     console.log("token: " + token);
