@@ -5,8 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var cors = require("cors");
-
-var index = require('./routes/index');
+let ejwt = require("express-jwt");
 
 var app = express();
 
@@ -23,7 +22,22 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
-app.use('/', index);
+// Get JWT key for routes unlock
+var jwt_key = "";
+if (process.env.NODE_ENV == "production") {
+    jwt_key = process.env.JWT_KEY
+}
+else {
+    jwt_key = require("./secrets.json").jwt_key;
+}
+
+// Public route definitions
+var publicRoutes = require('./routes/public');
+app.use('/', publicRoutes);
+
+// Private route definitions
+var privateRoutes = require('./routes/private');
+app.use('/', ejwt({secret: jwt_key}), privateRoutes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

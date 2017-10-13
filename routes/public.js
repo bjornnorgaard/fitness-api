@@ -26,9 +26,6 @@ router.get("/", function(req, res) {
   });
 });
 
-router.post("/workouts", controller.postWorkout);
-router.post("/exercises", controller.postExercise);
-router.post("/logs", controller.postLog);
 router.get("/workouts/", controller.getWorkouts);
 router.get("/workouts/:id", controller.getWorkout);
 router.get("/workouts/:id/logs", controller.getLogsForWorkout);
