@@ -10,6 +10,8 @@ router.get("/", function(req, res) {
     routes: [
       {
         POST: [
+          { route: "/login", description: "Call user credentials to get token" },
+          { route: "/register", description: "Creates user" },
           { route: "/workouts", description: "Creates a Workout" },
           { route: "/exercises", description: "Creates an Exercises" },
           { route: "/logs", description: "Creates a Log" }
