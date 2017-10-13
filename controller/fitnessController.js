@@ -39,7 +39,7 @@ var userSchema = {
     username: String,
     hash: String,
     salt: String,
-}
+};
 
 var ExerciseModel = mongoose.model("Exercises", exerciseSchema);
 var WorkoutModel = mongoose.model("Workouts", workoutSchema);
@@ -216,7 +216,7 @@ module.exports.getLogsForWorkout = function (req, res) {
     });
 };
 
-module.exports.postLogin = function(req, res){
+module.exports.postLogin = function (req, res) {
     var username = req.body.username;
     var pass = req.body.password;
 
@@ -241,7 +241,7 @@ module.exports.postLogin = function(req, res){
     });
 };
 
-module.exports.postRegister = function(req, res){
+module.exports.postRegister = function (req, res) {
     var username = req.body.username;
     var pass = req.body.password;
 
@@ -283,11 +283,11 @@ function sendResponse(res, message) {
     res.setHeader("Content-Type", "application/json");
     console.log(message);
     res.send(JSON.stringify(message));
-};
+}
 
 function generateHash(pass, salt) {
     return crypto.pbkdf2Sync(pass, salt, 1000, 256, "sha512").toString("hex");
-};
+}
 
 function generateToken(user) {
     var token = jwt.sign(
@@ -295,7 +295,7 @@ function generateToken(user) {
         jwt_key,
         {expiresIn: "24h"}
     );
-};
+}
 
 function isAuthentic(user, password) {
     var hash = generateHash(password, user.salt);
@@ -305,4 +305,4 @@ function isAuthentic(user, password) {
     else {
         return false;
     }
-};
+}
