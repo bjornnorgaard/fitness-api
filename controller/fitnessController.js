@@ -220,20 +220,28 @@ module.exports.postLogin = function (req, res) {
     var username = req.body.username;
     var pass = req.body.password;
 
-    console.log("postRegister(): username: " + username);
-    console.log("postRegister(): password: " + pass);
+    console.log("");
+    console.log("postLogin(): username: " + username);
+    console.log("postLogin(): password: " + pass);
 
     if (!username || !pass) {
         sendResponse(res, "Username and/or password was invalid");
     }
 
-    UserModel.findOne({username: username}, "username", function (err, user) {
+    UserModel.findOne({username: username}, "_id username hash salt", function (err, user) {
         if (err) {
             console.log("findOne(): " + err);
             sendResponse(res, err);
         }
-        if (user) {
-            sendResponse(res, {msg: "Found user, need to check hash", token: "none"});
+
+        console.log("user.id: " + user._id);
+        console.log("user.username: " + user.username);
+        console.log("user.hash: " + user.hash);
+        console.log("user.salt: " + user.salt);
+
+        if (user && isAuthentic(user, pass)) {
+            var token = generateToken(user);
+            sendResponse(res, {msg: "User successfully authenticated", token: token});
         }
         if (!user) {
             sendResponse(res, "User not found");
@@ -245,6 +253,7 @@ module.exports.postRegister = function (req, res) {
     var username = req.body.username;
     var pass = req.body.password;
 
+    console.log("");
     console.log("postRegister(): username: " + username);
     console.log("postRegister(): password: " + pass);
 
@@ -272,8 +281,8 @@ module.exports.postRegister = function (req, res) {
         if (!user) {
             console.log("Saving user...");
             newUser.save(function (err) {
-                console.log("User saved.");
-                sendResponse(res, "User saved.");
+                console.log("User created");
+                sendResponse(res, "User created");
             });
         }
     });
@@ -290,19 +299,38 @@ function generateHash(pass, salt) {
 }
 
 function generateToken(user) {
-    var token = jwt.sign(
-        {id: user._id, username: user.username},
-        jwt_key,
-        {expiresIn: "24h"}
-    );
+    console.log("");
+    console.log("generateToken()");
+    console.log("user.id: " + user._id);
+    console.log("user.username: " + user.username);
+    console.log("user.hash: " + user.hash);
+    console.log("user.salt: " + user.salt);
+
+    var payload = {
+        id: user._id,
+        username: user.username
+    };
+
+    var token = jwt.sign(payload, jwt_key, {
+        expiresIn: "24h"
+    });
+
+    console.log("token: " + token);
+    console.log("");
+
+    return token;
 }
 
 function isAuthentic(user, password) {
+    console.log("");
+
     var hash = generateHash(password, user.salt);
     if (user.hash == hash) {
+        console.log("isAuthentic() returned true");
         return true;
     }
     else {
+        console.log("isAuthentic() returned false");
         return false;
     }
 }
