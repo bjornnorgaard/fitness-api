@@ -232,21 +232,22 @@ module.exports.postLogin = function (req, res) {
         if (err) {
             console.log("findOne(): " + err);
             sendResponse(res, err);
+            return;
         }
-        if (user) {
+        else if (user) {
             console.log("user.id: " + user._id);
             console.log("user.username: " + user.username);
             console.log("user.hash: " + user.hash);
             console.log("user.salt: " + user.salt);
         }
-        if (user && isAuthentic(user, pass)) {
+        else if (user && isAuthentic(user, pass)) {
             var token = generateToken(user);
             sendResponse(res, {msg: "User successfully authenticated", token: token});
         }
-        if (user && !isAuthentic(user, pass)) {
+        else if (user && !isAuthentic(user, pass)) {
             sendResponse(res, "User not authentic");
         }
-        if (!user) {
+        else if (!user) {
             sendResponse(res, "User not found");
         }
         else {
