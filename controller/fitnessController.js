@@ -226,6 +226,7 @@ module.exports.postLogin = function (req, res) {
 
     if (!username || !pass) {
         sendResponse(res, "Username and/or password was invalid");
+        return;
     }
 
     UserModel.findOne({username: username}, "_id username hash salt", function (err, user) {
