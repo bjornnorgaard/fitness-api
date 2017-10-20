@@ -235,13 +235,13 @@ module.exports.postLogin = function (req, res) {
             sendResponse(res, err);
             return;
         }
-        else if (user) {
+        if (user) {
             console.log("user.id: " + user._id);
             console.log("user.username: " + user.username);
             console.log("user.hash: " + user.hash);
             console.log("user.salt: " + user.salt);
         }
-        else if (user && isAuthentic(user, pass)) {
+        if (user && isAuthentic(user, pass)) {
             var token = generateToken(user);
             sendResponse(res, {msg: "User successfully authenticated", token: token});
         }
