@@ -233,7 +233,6 @@ module.exports.postLogin = function (req, res) {
         if (err) {
             console.log("findOne(): " + err);
             sendResponse(res, err);
-            // return;
         }
         if (user) {
             console.log("user.id: " + user._id);
