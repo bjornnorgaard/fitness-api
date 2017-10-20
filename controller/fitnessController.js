@@ -243,6 +243,9 @@ module.exports.postLogin = function (req, res) {
             var token = generateToken(user);
             sendResponse(res, {msg: "User successfully authenticated", token: token});
         }
+        if (user && !isAuthentic(user, pass)) {
+            sendResponse(res, "User not authentic");
+        }
         if (!user) {
             sendResponse(res, "User not found");
         }
